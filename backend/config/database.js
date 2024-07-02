@@ -5,9 +5,9 @@ const connectDatabase = ()=>{
         .then((data)=>{
             console.log(`mongoDB connected with server : ${data.connection.host}`);
         })
-        .catch((e)=>{
-            console.log(e);
-        })
+        // .catch((e)=>{
+        //     console.log(e);
+        // })
 }
 
 module.exports = connectDatabase;
