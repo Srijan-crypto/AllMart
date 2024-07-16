@@ -17,17 +17,27 @@ exports.createProduct = catchAsyncErrors(async (req,res,next)=>{
 
 
 //Get all Products
-exports.getAllProducts = catchAsyncErrors(async (req,res)=>{
+exports.getAllProducts = catchAsyncErrors(async (req,res,next)=>{
     const productCount = await Product.countDocuments();
-    const resultPerPage = 5;
+    const resultPerPage = 8;
 
-    const apiFeatures = new ApiFeatures(Product.find(),req.query).search().filter().pagination(resultPerPage);
+    const apiFeatures = new ApiFeatures(Product.find(),req.query)
+        .search()
+        .filter();
 
-    const allProd = await apiFeatures.query;
+    let product = await apiFeatures.query;
+    let filteredProductsCount = product.length;
+    apiFeatures.pagination(resultPerPage);
+
+    const productsQuery = apiFeatures.query.clone();
+    const allProd = await productsQuery;
+    
     res.status(200).json({
         success:true,
         allProd,
-        productCount
+        productCount,
+        resultPerPage,
+        filteredProductsCount,
     })
 })
 

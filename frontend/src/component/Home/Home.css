@@ -13,13 +13,24 @@
     color: white;
   }
 
-  .cart{
+
+  .cartdiv{
+    display: flex;
+    flex-direction: column-reverse;
+    text-align: end;
+    align-items: flex-end;
+    justify-content: flex-end;
     width: 90%;
-    flex-direction: column;
+  }
+  .cart{
+    /* width: 90%; */
+    /* flex-direction: column; */
     color: white;
-    align-items: end;
-    justify-content: end;
-    text-align:right;
+    height: 20%;
+    justify-content: flex-start;
+    /* align-items: end; */
+    /* justify-content: end; */
+    /* text-align:right; */
   }
   .cartb{
     margin-bottom: 5vmax;
@@ -30,6 +41,7 @@
     padding: 1vmax;
     transition: all 0.5s;
     width: 1vmax;
+    /* height: 50%; */
     font: 500 1vmax "Roboto";
   }
   /* .cartp{

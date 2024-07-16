@@ -5,9 +5,18 @@ const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail.js");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary");
 
 // Register a User
 exports.registerUser = catchAsyncErrors( async(req,res,next) => {
+
+
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+        crop: "scale",
+    });
+
     const {name,email,password} = req.body;
 
     const newUser = await User.create({
@@ -15,18 +24,12 @@ exports.registerUser = catchAsyncErrors( async(req,res,next) => {
         email,
         password,
         avatar:{
-            public_id:"this is a sample id",
-            url:"profilepicurl",
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
         },
     });
 
     sendToken(newUser,201,res);
-
-    // const token = newUser.getJWTToken();
-    // res.status(201).json({
-    //     success:true,
-    //     token
-    // })
 })
 
 
@@ -63,10 +66,12 @@ exports.loginUser = catchAsyncErrors( async(req,res,next) => {
 
 //Logout User
 exports.logout = catchAsyncErrors(async (req,res,next)=>{
-    res.cookie("token", null, {
-        expires: new Date(Date.now()),
-        httpOnly:true,
-    })
+    // res.cookie("token", null, {
+    //     expires: new Date(Date.now()),
+    //     httpOnly:true,
+    // })
+    console.log("LALALA");
+    localStorage.setItem("token",null);
 
     res.status(200).json({
         success:true,
@@ -183,9 +188,9 @@ exports.updateProfile = catchAsyncErrors(async (req,res,next) => {
         name: req.body.name,
         email: req.body.email,
     };
-
-    const user = await User.findByIdAndUpdate(req.user.id, newUserData);
-
+    // console.log(req.user);
+    const user = await User.findByIdAndUpdate(req.user.id, newUserData, { new: true });
+    // console.log("userController.js");
     res.status(200).json({
         success:true
     })

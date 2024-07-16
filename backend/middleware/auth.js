@@ -4,27 +4,27 @@ const catchAsyncErrors = require("./catchAsyncErrors");
 const User  = require("../models/userModel");
 
 exports.isAuthenticatedUser = catchAsyncErrors( async (req,res,next) => {
-    const {token} = req.cookies;
-    // console.log(token);
+    let token = req.header("token");
+    // console.log("Token",token);
+    
+    if(token=="null") token = null;
+    
 
-
-    if(!token){
+    if(!token){ 
+        // console.log(req.header("token"));
+        // console.log("10");
         return next(new ErrorHander("Please login to view resource",401));
     }
 
-    // const decodedData = jwt.verify(token, process.env.JWT_SECRET);
-
-    // req.user = await User.findById(decodedData.id);
-    // next();
-
     let decodedData;
     try {
-        decodedData = jwt.verify(token, process.env.JWT_SECRET);
+        decodedData = await jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
         return next(new ErrorHander("Invalid or expired token, please login again", 401));
     }
 
-    req.user = await User.findById(decodedData.id);
+    const user = await User.findById(decodedData.id);
+    req.user = user;
 
     if (!req.user) {
         return next(new ErrorHander("User not found, please login again", 404));
