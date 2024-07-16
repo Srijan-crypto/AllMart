@@ -55,6 +55,9 @@ const UpdateProfile = () => {
             setAvatarPreview(user.avatar.url);
         }
 
+
+
+        
         if(error){
         //   if(error!=="Please login to view resource")
           toast(error);
