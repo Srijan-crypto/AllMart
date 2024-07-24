@@ -1,7 +1,7 @@
 import React, { Fragment, useRef, useState, useEffect } from 'react'
 import "./LoginSignUp.css";
 // import Loader from "../layout/Loader/Loader";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import FaceIcon from '@mui/icons-material/Face'
@@ -22,6 +22,8 @@ const LoginRegister = () => {
   const switcherTab = useRef(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log(location.search);
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -72,6 +74,9 @@ const LoginRegister = () => {
     }
   };
 
+  // const redirect = location.search ? location.search.split("=")[1] : '/account';
+   const redirect = '/account';
+  
 
   useEffect(() => {
     if(error){
@@ -81,9 +86,9 @@ const LoginRegister = () => {
       dispatch(clearErrors());
     }
     if(isAuthenticated){
-      navigate('/account');
+      navigate(redirect);
     }
-  }, [dispatch, error, navigate, isAuthenticated])
+  }, [dispatch, error, navigate, isAuthenticated, redirect]);
   
 
 

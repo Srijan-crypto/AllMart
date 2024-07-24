@@ -10,13 +10,13 @@ const cloudinary = require("cloudinary");
 // Register a User
 exports.registerUser = catchAsyncErrors( async(req,res,next) => {
 
-
+    // console.log("100");
     const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
         folder: "avatars",
         width: 150,
         crop: "scale",
     });
-
+    // console.log("100");
     const {name,email,password} = req.body;
 
     const newUser = await User.create({
@@ -91,7 +91,7 @@ exports.forgotPassword = catchAsyncErrors(async (req,res,next) => {
     const resetToken = user.getResetPasswordToken();
     await user.save({validateBeforeSave: false}); //to save the values after generating reset token and its expire value
 
-    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
     const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 
     try {
@@ -188,9 +188,36 @@ exports.updateProfile = catchAsyncErrors(async (req,res,next) => {
         name: req.body.name,
         email: req.body.email,
     };
-    // console.log(req.user);
+
+
+    // let x = await User.findById(req.user.id);
+    // console.log(x.avatar);
+    // console.log(req.body.avatar);
+    //the image uploading part has created some issues here!
+    //It is not uploading on cloudinary when on PROXY
+    //But when on DATA if avatar is changed then everything workd fine
+    // but if avatar is not changed then again error is thrown even on mobile data.
+    if(req.body.avatar!==""){
+        
+        const user = await User.findById(req.user.id);
+        const imageId = user.avatar.public_id;
+
+        
+        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+            folder: "avatars",
+            width: 150,
+            crop: "scale",
+        });
+        console.log("inside");
+        await cloudinary.v2.uploader.destroy(imageId);
+        console.log("inside");
+        newUserData.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+        };
+    }
+
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, { new: true });
-    // console.log("userController.js");
     res.status(200).json({
         success:true
     })
@@ -204,7 +231,7 @@ exports.getAllUsers = catchAsyncErrors(async (req,res,next) => {
 
     res.status(200).json({
         success:true,
-        users
+        users,
     })
 })
 
@@ -238,7 +265,7 @@ exports.updateRole = catchAsyncErrors(async (req,res,next) => {
         return next(new ErrorHander(`No user with id ${req.params.id}`,400));
     }
     res.status(200).json({
-        success:true
+        success: true
     })
 
 })
@@ -247,12 +274,14 @@ exports.updateRole = catchAsyncErrors(async (req,res,next) => {
 // Delete User -- ADMIN
 exports.deleteUser = catchAsyncErrors(async (req,res,next) => {
 
-    //We will remove cloudinary later
-
     const user = await User.findById(req.params.id);
     if(!user){
         return next(new ErrorHander(`No user with id ${req.params.id}`,400));
     }
+
+    const imageId = user.avatar.public_id;
+
+    await cloudinary.v2.uploader.destroy(imageId);
 
     await user.deleteOne();
 

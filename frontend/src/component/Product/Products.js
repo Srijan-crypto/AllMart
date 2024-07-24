@@ -30,7 +30,7 @@ const Products = () => {
     setcurrentPage(e);
   }
 
-  const [price, setprice] = useState([0,25000]);
+  const [price, setprice] = useState([0,250000]);
   const priceHandler = (event, newPrice)=>{
     setprice(newPrice);
   }
@@ -76,7 +76,7 @@ const Products = () => {
                 valueLabelDisplay='auto'
                 aria-labelledby='range-slider'
                 min={0}
-                max={25000}
+                max={250000}
             />
 
             <Typography>Categories</Typography>
