@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from 'react'
 import './NewProduct.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { createProduct, clearErrors } from '../../actions/productAction'
-import { toast } from 'react-toastify'
+import { useAlert } from 'react-alert'
 import { Button } from '@mui/material'
 import MetaData from "../layout/metaData.js"
 import AccountTreeIcon from "@mui/icons-material/AccountTree.js"
@@ -19,6 +19,7 @@ const NewProduct = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const alert = useAlert();
 
     const { loading, error, success } = useSelector((state) => state.newProduct);
 
@@ -42,18 +43,18 @@ const NewProduct = () => {
 
     useEffect(() => {
       if(error){
-        toast(error);
+        alert.error(error);
         dispatch(clearErrors());
       }
 
       if(success){
-        toast("Product Created Successfully");
+        alert.success("Product Created Successfully");
         navigate("/admin/dashboard");
         dispatch({
             type: NEW_PRODUCT_RESET
         });
       }
-    }, [dispatch, error, success, navigate]);
+    }, [dispatch, error, success, navigate, alert]);
 
 
     const createProductSubmitHandler = (e) => {

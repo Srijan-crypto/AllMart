@@ -6,6 +6,7 @@ import { addItemsToCart, removeItemsFromCart } from '../../actions/cartAction.js
 import { Typography } from '@mui/material'
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart.js'
 import { Link, useNavigate } from 'react-router-dom'
+import MetaData from "../layout/metaData"
 
 const Cart = () => {
 
@@ -37,6 +38,7 @@ const Cart = () => {
 
   return (
     <Fragment>
+        <MetaData title="Cart"/>
         {
             cartItems.length === 0 ? (
                 <div className="emptyCart">

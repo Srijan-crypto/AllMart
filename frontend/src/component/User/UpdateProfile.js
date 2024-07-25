@@ -5,7 +5,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import FaceIcon from '@mui/icons-material/Face'
 import { useDispatch, useSelector } from 'react-redux';
 import { clearErrors, loadUser, updateProfile } from '../../actions/userAction'
-import { toast } from 'react-toastify';
+import { useAlert } from 'react-alert';
 import Loader from '../layout/Loader/Loader';
 import { UPDATE_PROFILE_RESET } from "../../constants/userConstants";
 import MetaData from "../layout/metaData.js"
@@ -14,6 +14,7 @@ const UpdateProfile = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const alert = useAlert();
     const {user} = useSelector((state) => state.user);
     const { error, isUpdated, loading } = useSelector((state) => state.profile);
 
@@ -60,11 +61,11 @@ const UpdateProfile = () => {
         
         if(error){
         //   if(error!=="Please login to view resource")
-          toast(error);
+            alert.error(error);
           dispatch(clearErrors());
         }
         if (isUpdated) {
-            toast("Profile Updated Successfully");
+            alert.success("Profile Updated Successfully");
             dispatch(loadUser());
       
             navigate("/account");
@@ -73,7 +74,7 @@ const UpdateProfile = () => {
               type: UPDATE_PROFILE_RESET,
             });
           }
-      }, [dispatch, error, isUpdated, navigate, user]);
+      }, [dispatch, error, isUpdated, navigate, user, alert]);
       
     
     
@@ -85,7 +86,7 @@ const UpdateProfile = () => {
                 <Loader />
             ) : (
                 <Fragment>
-                    <MetaData title="Update Product"/>
+                    <MetaData title="Update Profile"/>
                     <div className="updateProfileContainer">
                         <div className="updateProfileBox">
 

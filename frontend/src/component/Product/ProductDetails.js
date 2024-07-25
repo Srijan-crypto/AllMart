@@ -6,7 +6,7 @@ import { clearErrors, getProductDetails, newReview } from '../../actions/product
 import { useParams } from 'react-router-dom';
 import ReviewCard from  './ReviewCard.js'
 import Loader from '../layout/Loader/Loader.js';
-import { toast } from 'react-toastify';
+import { useAlert } from 'react-alert';
 import MetaData from "../layout/metaData.js"
 import { addItemsToCart } from "../../actions/cartAction.js"
 import {
@@ -22,6 +22,7 @@ import { NEW_REVIEW_RESET } from '../../constants/productConstants.js';
 const ProductDetails = () => {
 
   const dispatch = useDispatch();
+  const alert = useAlert();
   const { id } = useParams();
 
   const { product, loading, error } = useSelector((state) => state.productDetails);
@@ -46,7 +47,7 @@ const ProductDetails = () => {
 
   const addToCartHandler = () => {
     dispatch(addItemsToCart(id, quantity));
-    toast("Item Added To Cart");
+    alert.success("Item Added To Cart");
   }
 
   const submitReviewToggle = () => {
@@ -68,24 +69,22 @@ const ProductDetails = () => {
   useEffect(() => {
     if(error){
         // console.log(error);
-        toast(error.message,{
-            autoClose: 3000,
-        });
+        alert.error(error.message);
         dispatch(clearErrors());
     }
 
     if(reviewError){
-        toast(reviewError);
+        alert.error(reviewError);
         dispatch(clearErrors());
     }
 
     if(success){
-        toast("Review Submitted Successfully");
+        alert.success("Review Submitted Successfully");
         dispatch({ type: NEW_REVIEW_RESET });
     }
 
     dispatch(getProductDetails(id));
-  }, [dispatch, id, error, success, reviewError]);
+  }, [dispatch, id, error, success, reviewError, alert]);
 
 
   const options = {

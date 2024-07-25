@@ -7,23 +7,24 @@ import { Link, useParams } from 'react-router-dom'
 import { Typography } from '@mui/material'
 import { getOrderDetails, clearErrors } from '../../actions/orderAction.js'
 import Loader from '../layout/Loader/Loader.js'
-import { toast } from 'react-toastify'
+import { useAlert } from 'react-alert'
 
 const OrderDetails = () => {
 
     const { order, error, loading } = useSelector((state) => state.orderDetails);
 
     const dispatch = useDispatch();
+    const alert = useAlert();
     const { id } = useParams();
 
     useEffect(() => {
       if(error){
-        toast(error);
+        alert.error(error);
         dispatch(clearErrors());
       }
 
       dispatch(getOrderDetails(id))
-    }, [dispatch, error, id])
+    }, [dispatch, error, id, alert])
     
 
   return (

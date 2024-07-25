@@ -1,6 +1,5 @@
 import React, { Fragment, useRef, useState, useEffect } from 'react'
 import "./LoginSignUp.css";
-// import Loader from "../layout/Loader/Loader";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
@@ -8,13 +7,15 @@ import FaceIcon from '@mui/icons-material/Face'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { clearErrors, login, register } from '../../actions/userAction'
-import { toast } from 'react-toastify';
+import { useAlert } from 'react-alert';
 import Loader from '../layout/Loader/Loader';
+import MetaData from '../layout/metaData'
 
 
 const LoginRegister = () => {
 
   const dispatch = useDispatch();
+  const alert = useAlert();
   const {error, loading, isAuthenticated} = useSelector((state) => state.user);
 
   const loginTab = useRef(null);
@@ -39,7 +40,6 @@ const LoginRegister = () => {
   const [avatarPreview, setAvatarPreview] = useState("/logo192.png");
 
   const loginSubmit = (e)=>{ 
-    // console.log("Login Form Submitted");
     e.preventDefault();
     dispatch(login(loginEmail, loginPassword));
   }
@@ -52,7 +52,6 @@ const LoginRegister = () => {
     myForm.set("email", email);
     myForm.set("password", password);
     myForm.set("avatar", avatar);
-    // console.log("SignUp form submitted");
     dispatch(register(myForm));
   }
 
@@ -80,15 +79,14 @@ const LoginRegister = () => {
 
   useEffect(() => {
     if(error){
-      // console.log("ERROR");
-      if(error!=="Please login to view resource")
-      toast(error);
+      if(!(error==="User not found, Please login again" || error==="Please login to view resource"))
+        {alert.error(error);}
       dispatch(clearErrors());
     }
     if(isAuthenticated){
       navigate(redirect);
     }
-  }, [dispatch, error, navigate, isAuthenticated, redirect]);
+  }, [dispatch, error, navigate, isAuthenticated, redirect, alert]);
   
 
 
@@ -117,6 +115,7 @@ const LoginRegister = () => {
           <Loader />
         ) : (
           <Fragment>
+            <MetaData title="Login / Sign-Up"/>
           <div className="LoginSignUpContainer">
             <div className="LoginSignUpBox">
               <div>

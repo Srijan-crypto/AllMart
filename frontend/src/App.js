@@ -30,7 +30,6 @@ import OrderSuccess from "./component/Cart/OrderSuccess.js"
 import MyOrders from './component/Order/MyOrders.js'
 import OrderDetails from './component/Order/OrderDetails.js'
 import Dashboard from './component/admin/Dashboard.js'
-import { toast } from 'react-toastify';
 import ProductList from './component/admin/ProductList.js'
 import NewProduct from './component/admin/NewProduct.js';
 import UpdateProduct from './component/admin/UpdateProduct.js'
@@ -38,8 +37,13 @@ import OrderList from './component/admin/OrderList.js'
 import ProcessOrder from './component/admin/ProcessOrder.js'
 import UsersList from './component/admin/UsersList.js'
 import UpdateUser from './component/admin/UpdateUser.js'
+import ProductReviews from './component/admin/ProductReviews.js'
+import Contact from "./component/layout/Contact/Contact.js";
+import About from "./component/layout/About/About.js";
+import NotFound from "./component/layout/Not Found/NotFound.js";
 
 function App() {
+
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
   const [stripeApiKey, setStripeApiKey] = useState("");
@@ -53,9 +57,9 @@ function App() {
     });
       setStripeApiKey(data.stripeApiKey);
     } catch (error) {
-      toast(error);
+      
     }
-    
+      
   }
 
   React.useEffect(() => {
@@ -66,17 +70,34 @@ function App() {
     });
     store.dispatch(loadUser());
     getStripeApiKey();
-  }, []);
+  }, []); 
+  
+
+  window.addEventListener("contextmenu", (e) => e.preventDefault());
+
 
   return (
     <Router>
       <Header />
       {isAuthenticated && <UserOptions user={user} />}
+
+      <Routes>
+        {
+          stripeApiKey && <Route exact path="/process/payment" element={
+            <Elements stripe={loadStripe(stripeApiKey)}>
+              <ProtectedRoute><Payment /></ProtectedRoute>
+            </Elements>
+            } />
+        }
+      </Routes>
+
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/product/:id" element={<ProductDetails />} />
         <Route exact path="/products" element={<Products />} />
         <Route exact path="/search" element={<Search />} />
+        <Route exact path="/contact" element={<Contact />} />
+        <Route exact path="/about" element={<About />} />
         <Route path="/products/:keyword" element={<Products />} />
         <Route exact path="/login" element={<LoginRegister />} />
         {/* <Route exact path="/account" element={<ProtectedRoute element={<Profile />} />} />  Wrong routing*/ } 
@@ -89,13 +110,6 @@ function App() {
         <Route exact path="/shipping" element={<ProtectedRoute> <Shipping /> </ProtectedRoute>} />
         <Route exact path="/orders/confirm" element={<ProtectedRoute> <ConfirmOrder /> </ProtectedRoute>} />
         
-        {
-          stripeApiKey && <Route exact path="/process/payment" element={
-            <Elements stripe={loadStripe(stripeApiKey)}>
-              <ProtectedRoute><Payment /></ProtectedRoute>
-            </Elements>
-            } />
-        }
         
         <Route exact path="/success" element={<ProtectedRoute> <OrderSuccess /> </ProtectedRoute>} />        
         <Route exact path="/orders" element={<ProtectedRoute> <MyOrders /> </ProtectedRoute>} />        
@@ -109,7 +123,12 @@ function App() {
         <Route exact path="/admin/order/:id" element={<ProtectedRoute isAdmin={true}> <ProcessOrder /> </ProtectedRoute>} />
         <Route exact path="/admin/users" element={<ProtectedRoute isAdmin={true}> <UsersList /> </ProtectedRoute>} />
         <Route exact path="/admin/user/:id" element={<ProtectedRoute isAdmin={true}> <UpdateUser /> </ProtectedRoute>} />
+        <Route exact path="/admin/reviews" element={<ProtectedRoute isAdmin={true}> <ProductReviews /> </ProtectedRoute>} />
         
+        {/* Catch-all route for undefined paths */}
+        <Route path="*" element={
+          window.location.pathname === "/process/payment" ? null : <NotFound/>
+        } />
 
       </Routes>
       <Footer />

@@ -10,18 +10,12 @@ const Profile = () => {
   let {user, loading, isAuthenticated} = useSelector((state) => state.user);
 
   const navigate = useNavigate();
-//   console.log("user",user);
-//   console.log("loading",loading);
-//   console.log("isAuthenticated",isAuthenticated);
 
   useEffect(() => {
     if(isAuthenticated === false && user===null){
         navigate('/login');
     }
   }, [isAuthenticated, navigate, user]);
-//   console.log("User",user);
-//   console.log("loading",loading);
-//   console.log("Auth",isAuthenticated);
   if(isAuthenticated===undefined) user=null;
   
 

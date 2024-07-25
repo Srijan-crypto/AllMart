@@ -9,7 +9,7 @@ import ListAltIcon from '@mui/icons-material/ListAlt'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { useAlert } from 'react-alert';
 import { logout } from '../../../actions/userAction';
 
 const UserOptions = ({user}) => {
@@ -19,6 +19,7 @@ const UserOptions = ({user}) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const alert = useAlert();
 
   const options = [
     { icon: <ListAltIcon />, name: "Orders", func: orders },
@@ -45,7 +46,7 @@ const UserOptions = ({user}) => {
   }
   function logoutUser() {
     dispatch(logout());
-    toast("Logged Out Successfully");
+    alert.success("Logged Out Successfully");
   }
 
   return(

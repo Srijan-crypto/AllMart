@@ -6,23 +6,22 @@ import MetaData from "../layout/metaData.js"
 import {clearErrors, getProduct} from "../../actions/productAction.js"
 import {useSelector, useDispatch} from 'react-redux'
 import Loader from '../layout/Loader/Loader.js'
-import { toast } from 'react-toastify';
+import { useAlert } from 'react-alert'
 
 const Home = () => {
   const dispatch = useDispatch();
+  const alert = useAlert();
   const {loading, error, products} = useSelector(state=>state.products);
 
 
   useEffect(() => {
     if(error){
         // console.log(error);
-        toast(error.message,{
-            autoClose: 3000,
-        });
+        alert.error(error.message);
         dispatch(clearErrors());
     }
     dispatch(getProduct());
-  }, [dispatch,error]);
+  }, [dispatch,error, alert]);
   
   
 
@@ -52,16 +51,6 @@ const Home = () => {
                 <h2 className='homeHeading'>Featured Products</h2>
         
                 <div className="container" id='container'>
-                    {/* <Product product={product}/>
-                    <Product product={product}/>
-                    <Product product={product}/>
-                    <Product product={product}/>
-        
-                    <Product product={product}/>
-                    <Product product={product}/>
-                    <Product product={product}/>
-                    <Product product={product}/> */}
-        
                     {products && products.map(product => (
                         <Product product={product}/>
                     ))}

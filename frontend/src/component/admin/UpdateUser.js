@@ -1,11 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { Button } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useAlert } from "react-alert";
+import { Button, Typography } from "@mui/material";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import MetaData from "../layout/metaData.js"
 import MailOutlineIcon from "@mui/icons-material/MailOutline.js";
 import PersonIcon from "@mui/icons-material/Person.js";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline.js'
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser.js";
 import SideBar from "./Sidebar";
 import { UPDATE_USER_RESET } from "../../constants/userConstants";
@@ -15,14 +16,16 @@ import {
   clearErrors,
 } from "../../actions/userAction";
 import Loader from "../layout/Loader/Loader";
+import "./UpdateUser.css"
 
 const UpdateUser = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const alert = useAlert();
   const { id } = useParams();
 
   const { loading, error, user } = useSelector((state) => state.userDetails);
-
+  const { user: loggedInUser } = useSelector((state) => state.user);
   const { loading: updateLoading, error: updateError, isUpdated } = useSelector((state) => state.profile);
 
   const [name, setName] = useState("");
@@ -40,21 +43,21 @@ const UpdateUser = () => {
       setRole(user.role);
     }
     if (error) {
-      toast(error);
+      alert.error(error);
       dispatch(clearErrors());
     }
 
     if (updateError) {
-      toast(updateError);
+      alert.error(updateError);
       dispatch(clearErrors());
     }
 
     if (isUpdated) {
-      toast("User Updated Successfully");
+      alert.success("User Updated Successfully");
       navigate("/admin/users");
       dispatch({ type: UPDATE_USER_RESET });
     }
-  }, [dispatch, error, isUpdated, updateError, user, userId, navigate]);
+  }, [dispatch, error, isUpdated, updateError, user, userId, navigate, alert]);
 
   const updateUserSubmitHandler = (e) => {
     e.preventDefault();
@@ -77,6 +80,13 @@ const UpdateUser = () => {
           {loading ? (
             <Loader />
           ) : (
+            (loggedInUser && loggedInUser._id === userId) ? <Fragment>
+              <div className="emptyUser">
+                  <ErrorOutlineIcon />
+                  <Typography>Cannot Update Your Own Role</Typography>
+                  <Link to="/admin/users">Go Back</Link>
+              </div>
+            </Fragment> : 
             <form
               className="createProductForm"
               onSubmit={updateUserSubmitHandler}

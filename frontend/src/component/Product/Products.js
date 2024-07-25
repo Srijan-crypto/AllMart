@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 import Slider from '@mui/material/Slider'
 import Typography from '@mui/material/Typography';
-import { toast } from 'react-toastify';
+import { useAlert } from 'react-alert';
 import MetaData from "../layout/metaData.js"
 
 const categories = [
@@ -24,6 +24,7 @@ const categories = [
 
 const Products = () => {
   const dispatch = useDispatch();
+  const alert = useAlert();
 
   const [currentPage, setcurrentPage] = useState(1);
   const setCurrentPageNo = (e)=>{
@@ -45,13 +46,11 @@ const Products = () => {
 
   useEffect(() => {
     if (error) {
-        toast(error.message,{
-            autoClose: 3000, 
-        });
+      alert.error(error.message);
       dispatch(clearErrors());
     }
     dispatch(getProduct(keyword, currentPage, price, category, ratings));
-  }, [dispatch, keyword, error, currentPage, price, category, ratings]);
+  }, [dispatch, keyword, error, currentPage, price, category, ratings, alert]);
 
   return (
     <Fragment>

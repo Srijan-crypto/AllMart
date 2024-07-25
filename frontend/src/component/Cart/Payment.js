@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import MetaData from "../layout/metaData.js"
 import { Typography } from '@mui/material'
-import { toast } from 'react-toastify'
+import { useAlert } from 'react-alert'
 import{
     CardNumberElement,
     CardCvcElement,
@@ -19,6 +19,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard.js"
 import EventIcon from "@mui/icons-material/Event.js"
 import VpnKeyIcon from "@mui/icons-material/VpnKey.js"
 import { clearErrors, createOrder } from '../../actions/orderAction.js'
+import { emptyTheCart } from '../../actions/cartAction.js'
 
 
 const Payment = () => {
@@ -29,6 +30,7 @@ const Payment = () => {
     const navigate = useNavigate();
     const stripe = useStripe();
     const elements = useElements();
+    const alert = useAlert();
 
     const payBtn = useRef(null);
 
@@ -85,7 +87,7 @@ const Payment = () => {
 
             if(result.error){
                 payBtn.current.disabled = false;
-                toast(result.error.message);
+                alert.error(result.error.message);
             }
             else{
                 if(result.paymentIntent.status === "succeeded"){
@@ -96,26 +98,26 @@ const Payment = () => {
                     }
 
                     dispatch(createOrder(order));
-
+                    dispatch(emptyTheCart());
                     navigate("/success");
                 } else {
-                    toast("There's some issue while processing paymnet");
+                    alert.error("There's some issue while processing payment");
                 }
             }
 
 
         } catch (error) {
             payBtn.current.disabled = false;
-            toast(error.response.data.message);
+            alert.error(error.response.data.message);
         }
     };
 
     useEffect(() => {
       if(error){
-        toast(error);
+        alert.error(error);
         dispatch(clearErrors());
       }
-    }, [error, dispatch])
+    }, [error, dispatch, alert])
     
 
   return (

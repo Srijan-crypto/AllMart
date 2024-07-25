@@ -202,15 +202,13 @@ exports.updateProfile = catchAsyncErrors(async (req,res,next) => {
         const user = await User.findById(req.user.id);
         const imageId = user.avatar.public_id;
 
+        await cloudinary.v2.uploader.destroy(imageId);
         
         const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
             folder: "avatars",
             width: 150,
             crop: "scale",
         });
-        console.log("inside");
-        await cloudinary.v2.uploader.destroy(imageId);
-        console.log("inside");
         newUserData.avatar = {
             public_id: myCloud.public_id,
             url: myCloud.secure_url,
@@ -255,8 +253,8 @@ exports.getSingleUser = catchAsyncErrors(async (req,res,next) => {
 exports.updateRole = catchAsyncErrors(async (req,res,next) => {
 
     const newUserData = {
-        // name: req.body.name,
-        // email: req.body.email,
+        name: req.body.name,
+        email: req.body.email,
         role: req.body.role,
     };
 

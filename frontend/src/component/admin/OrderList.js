@@ -4,7 +4,7 @@ import { DataGrid } from '@mui/x-data-grid'
 import './ProductList.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useAlert } from 'react-alert'
 import { Button } from '@mui/material'
 import MetaData from "../layout/metaData.js"
 import EditIcon from '@mui/icons-material/Edit.js'
@@ -18,6 +18,7 @@ const OrderList = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const alert = useAlert();
 
     const { error, orders } = useSelector((state) => state.allOrders);
 
@@ -29,17 +30,17 @@ const OrderList = () => {
 
     useEffect(() => {
       if(error){
-        toast(error);
+        alert.error(error);
         dispatch(clearErrors());
       }
 
       if(deleteError){
-        toast(deleteError);
+        alert.error(deleteError);
         dispatch(clearErrors());
       }
 
       if(isDeleted){
-        toast("Order Deleted Successfully");
+        alert.success("Order Deleted Successfully");
         navigate('/admin/orders');
         dispatch({
             type: DELETE_ORDER_RESET,
@@ -47,7 +48,7 @@ const OrderList = () => {
       }
 
       dispatch(getAllOrders());
-    }, [dispatch, error, deleteError, isDeleted, navigate]);
+    }, [dispatch, error, deleteError, isDeleted, navigate, alert]);
     
 
     const columns = [

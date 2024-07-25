@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from 'react'
 import './NewProduct.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateProduct, getProductDetails, clearErrors } from '../../actions/productAction'
-import { toast } from 'react-toastify'
+import { useAlert } from 'react-alert'
 import { Button } from '@mui/material'
 import MetaData from "../layout/metaData.js"
 import AccountTreeIcon from "@mui/icons-material/AccountTree.js"
@@ -21,6 +21,7 @@ const UpdateProduct = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
+    const alert = useAlert();
 
     const {error, product} = useSelector((state) => state.productDetails);
     const { loading, error: updateError, isUpdated } = useSelector((state) => state.product);
@@ -61,23 +62,23 @@ const UpdateProduct = () => {
       }
 
       if(error){
-        toast(error);
+        alert.error(error);
         dispatch(clearErrors());
       }
 
       if(updateError){
-        toast(updateError);
+        alert.error(updateError);
         dispatch(clearErrors());
       }
 
       if(isUpdated){
-        toast("Product Updated Successfully");
+        alert.success("Product Updated Successfully");
         navigate("/admin/products");
         dispatch({
             type: UPDATE_PRODUCT_RESET
         });
       }
-    }, [dispatch, error, isUpdated, navigate, product, productId, updateError]);
+    }, [dispatch, error, isUpdated, navigate, product, productId, updateError, alert]);
 
 
     const updateProductSubmitHandler = (e) => {
